@@ -6,7 +6,7 @@ import { PokemonService } from './services/PokemonService';
 import { PokemonRepository } from './repositories/PokemonRepository';
 
 const router = Router();
-const pokemonRepository = new PokemonRepository();
+const pokemonRepository= new PokemonRepository();
 const pokemonService = new PokemonService(pokemonRepository);
 const pokemonController = new PokemonController(pokemonService);
 
