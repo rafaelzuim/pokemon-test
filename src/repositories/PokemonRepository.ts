@@ -3,6 +3,7 @@
 import {Pokemon} from '../models/Pokemon';
 import {promises as fsPromises} from 'fs';
 import * as path from 'path';
+import {SearchFilters} from "../types/SearchFilter";
 
 export class PokemonRepository {
     private pokemons: Pokemon[] = [];
@@ -48,8 +49,23 @@ export class PokemonRepository {
             });
     }
 
-    async getAll(): Promise<Pokemon[]> {
-        return this.pokemons;
+    async getAll(filter: Partial<SearchFilters>): Promise<Pokemon[]> {
+        const {hp, attack, defense, name} = filter;
+        let filteredPokemon = this.pokemons;
+        if (hp) {
+            filteredPokemon = filteredPokemon.filter((pokemon) => pokemon.hp === hp);
+        }
+        if (attack) {
+            filteredPokemon = filteredPokemon.filter((pokemon) => pokemon.attack === attack);
+        }
+        if (defense) {
+            filteredPokemon = filteredPokemon.filter((pokemon) => pokemon.defense === defense);
+        }
+        if (name) {
+            const searchName = (name as string).toLowerCase();
+            filteredPokemon = filteredPokemon.filter((pokemon) => pokemon.name.toLowerCase().includes(searchName));
+        }
+        return filteredPokemon;
     }
 
     // Helper function to parse CSV content into an array of objects
