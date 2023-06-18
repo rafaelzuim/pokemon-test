@@ -10,7 +10,7 @@ const pokemonRepository= new PokemonRepository();
 const pokemonService = new PokemonService(pokemonRepository);
 const pokemonController = new PokemonController(pokemonService);
 
-// Route to get all Pokemon
+// Route to get all Pokemons
 router.get('/pokemon', pokemonController.getAllPokemon.bind(pokemonController));
 
 export default router;
