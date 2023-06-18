@@ -4,6 +4,7 @@ import {Pokemon} from '../models/Pokemon';
 import {promises as fsPromises} from 'fs';
 import * as path from 'path';
 import {SearchFilters} from "../types/SearchFilter";
+import {extendPokemonWithDecorators} from "../utils/PokemonUtils";
 
 export class PokemonRepository {
     private pokemons: Pokemon[] = [];
@@ -19,28 +20,25 @@ export class PokemonRepository {
         this.pokemons = pokemonData.map((data) => this.createPokemon(data));
 
         // filter and applies the logic to remove and change pokemon data accordingly to the business logic
-
-        /**
-         * todo If I have time, think about how to overcome this situation and clean up my code.
-         * The spec is a bit ambiguous in relation to the TYPE field, therefore I'm always testing Type1 and Type2.
-         **/
+        // todo If I have more time, I would also move to another service, but it's time to finish ;)
         this.pokemons = this.pokemons
             .filter((pokemon) => !pokemon.legendary)
             .filter((pokemon) => pokemon.type2 !== 'Ghost' && pokemon.type1 !== 'Ghost')
             .map((pokemon) => {
-                if (pokemon.type1 === 'Steel' || pokemon.type2 === 'Steel') {
+                const pokemonDecorator = extendPokemonWithDecorators(pokemon);
+                if (pokemonDecorator.isFromSteel()) {
                     pokemon.hp *= 2;
                 }
 
-                if (pokemon.type1 === 'Fire' || pokemon.type2 === 'Fire') {
+                if (pokemonDecorator.isFromFire()) {
                     pokemon.attack -= pokemon.attack * 0.1;
                 }
 
-                if (pokemon.type1 === 'Bug' && pokemon.type2 === 'Flying' || pokemon.type1 === 'Flying' && pokemon.type2 === 'Bug') {
+                if (pokemonDecorator.isABugAndCanFly()) {
                     pokemon.speed += pokemon.speed * 0.1;
                 }
 
-                if (pokemon.name.charAt(0) === 'G') {
+                if (pokemonDecorator.startsWithG()) {
                     const defenseIncrease = (pokemon.name.length - 1) * 5;
                     pokemon.defense += defenseIncrease;
                 }
